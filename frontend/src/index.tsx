@@ -2,8 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from "react-redux";
 import musicData from "./reducers";
-import { createStore, applyMiddleware } from "redux";
 import App from './App';
+import { Router } from "react-router-dom";
+import { createStore, applyMiddleware } from "redux";
+import history from "./history";
 import reportWebVitals from './reportWebVitals';
 import thunk from "redux-thunk";
 
@@ -15,7 +17,9 @@ const store = createStore(
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <Router history={history}>
+        <App />
+      </Router>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

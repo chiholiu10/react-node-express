@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from "react-redux";
-import { Link, BrowserRouter } from "react-router-dom";
-import { connect, ConnectedProps } from "react-redux";
+import { Link } from "react-router-dom";
+import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { getData, getId } from '../../actions';
 import axios from 'axios';
 
@@ -30,7 +29,7 @@ export const HomePage: React.FC<HomePageProps | MusicProps> = ({ musicListing })
     try {
       const fetchData = async () => {
         const result = await axios.get('http://localhost:5000/data', config);
-        dispatch(getData(result.data));
+        dispatch(getData(result.data.videos));
       };
       fetchData();
     } catch (error) {
@@ -38,42 +37,19 @@ export const HomePage: React.FC<HomePageProps | MusicProps> = ({ musicListing })
     }
   }, [dispatch]);
 
-  // const postReview = async (value: string) => {
-  //   const config = {
-  //     headers: { "Content-Type": "application/json" }
-  //   };
-
-  //   let data = {
-  //     name: value
-  //   };
-  //   try {
-  //     const getData = async () => {
-  //       const result = await axios.post('http://localhost:5000/songs', data, config);
-  //       console.log(result);
-  //     };
-  //     getData();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // const submitReview = () => {
-  //   postReview(inputValue);
-  // };
   return (
     <div>
       {musicListing.map((music: { id: number; image_url: string; title: string; }, index: number) => {
         return (
-          <BrowserRouter key={music.id}>
-            <Link
-              to={`/music/${music.id}`}
-              onClick={() => dispatch(getId(music.id))}
-            >
-              <div>
-                <img src={music.image_url} alt={music.title} />
-              </div>
-            </Link>
-          </BrowserRouter>
+          <Link
+            key={music.id}
+            to={`/music/${music.id}`}
+            onClick={() => dispatch(getId(music.id))}
+          >
+            <div>
+              <img src={music.image_url} alt={music.title} />
+            </div>
+          </Link>
         );
       })}
     </div >

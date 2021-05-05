@@ -5,7 +5,7 @@ const initialState = {
     musicId: ""
 };
 
-export const musicData = (state = initialState, action: { type: any; music: object; id: number; }) => {
+export const musicData = (state = initialState, action: { type: any; music: object; id: number; details: object; }) => {
     switch (action.type) {
         case types.GET_DATA: {
             return {
@@ -19,6 +19,13 @@ export const musicData = (state = initialState, action: { type: any; music: obje
             return {
                 ...state,
                 musicId: action.id
+            };
+        }
+
+        case types.GET_DETAILS: {
+            return {
+                ...state,
+                musicDetail: action.details
             };
         }
 

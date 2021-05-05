@@ -8,19 +8,13 @@ export const App: React.FC = () => {
     <div className="App">
       <BrowserRouter>
         <Switch>
-          <Route exact path="/">
-            <HomePage />
-          </Route>
-          <Route path="/music/:id">
-            <ReviewPage />
-          </Route>
+          <Route exact path="/" render={() => <HomePage />} />
+          <Route path="/music/:id" render={() => <ReviewPage />} />
           <Route path="*" render={() => <Redirect to={{ pathname: "/" }} />} />
         </Switch>
       </BrowserRouter>
     </div>
   );
 };
-
-
 
 export default App;

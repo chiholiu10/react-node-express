@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
-import { connect, ConnectedProps } from "react-redux";
+import { connect, ConnectedProps, useDispatch } from "react-redux";
+import { getDetails } from '../../actions';
 import { useParams } from "react-router-dom";
+import axios from 'axios';
 
 interface MusicList {
     id: number;
@@ -11,37 +13,49 @@ interface MusicList {
     image_url: string;
 }
 
+interface MusicProps {
+    musicDetails?: MusicList;
+}
+
 interface Params {
     id: any;
 }
 
-interface MusicProps {
-    musicListing?: MusicList[];
-}
-export const ReviewPage: React.FC<ReviewProps | MusicProps> = ({ musicListing }) => {
+export const ReviewPage: React.FC<ReviewProps | MusicProps> = ({ musicDetails }) => {
+    const dispatch = useDispatch();
     const { id } = useParams<Params>();
-    useEffect(() => {
-        console.log('load');
-    }, []);
 
-    const showAllMusic = musicListing.map((item: { id: number; artist: string; title: string; release_year: number; image_url: string; }, index: number) => (
-        <div key={item.id}>
-            <div>{item.id}</div>
-            <div>{item.artist}</div>
-            <div>{item.title}</div>
-            <div>{item.release_year}</div>
-            <img src={item.image_url} alt={item.title} />
-        </div>
-    ));
+    useEffect(() => {
+        const config = {
+            headers: { "accepts": "application/json" }
+        };
+
+        try {
+            const fetchData = async () => {
+                const result = await axios.get(`http://localhost:5000/music/${id}`, config);
+                dispatch(getDetails(result.data));
+            };
+            fetchData();
+        } catch (error) {
+            console.log(error);
+        }
+    }, [id, dispatch]);
+
     return (
-        <div>{showAllMusic}</div>
+        <div>
+            <div>{musicDetails.id}</div>
+            <div>{musicDetails.artist}</div>
+            <div>{musicDetails.title}</div>
+            <div>{musicDetails.release_year}</div>
+            <img src={musicDetails.image_url} alt={musicDetails.title} />
+
+        </div>
     );
 };
 
 const mapStateToProps = (state: any) => {
     return {
-        musicListing: state.musicData.allMusic || [],
-
+        musicDetails: state.musicData.musicDetail || []
     };
 };
 const connector = connect(mapStateToProps);
