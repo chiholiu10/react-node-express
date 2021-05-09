@@ -25,9 +25,9 @@ const musicSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    review: [{
+    reviews: [{
         id: {
-            type: Array,
+            type: Number,
             required: true
         },
         locale: {

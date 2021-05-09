@@ -54,11 +54,12 @@ app.get("/music/:id", async (req, res) => {
 });
 
 app.post('/addReview/:id', async (req, res) => {
-  let idNumber = req.params.id;
+  let idNumber = parseInt(req.params.id);
   let reviewObject = req.body;
   try {
+    const music = client.db('database').collection('music');
     const query = { id: idNumber };
-    const musicSong = await music.findOne(query);
+    await music.updateOne(query, { $push: { reviews: reviewObject } });
   } catch (err) {
     console.log(err);
   }

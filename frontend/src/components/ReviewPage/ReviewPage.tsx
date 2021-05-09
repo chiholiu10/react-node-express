@@ -66,12 +66,12 @@ export const ReviewPage: React.FC<ReviewProps | MusicProps> = ({ musicDetails })
 
   };
 
-  const submitReview = () => {
+  const submitReview = (reviewComment: string) => {
     postReview({
       id: id,
       locale: "nl",
       rating: rating,
-      text: String(comment)
+      text: String(reviewComment)
     });
   };
 
@@ -79,10 +79,6 @@ export const ReviewPage: React.FC<ReviewProps | MusicProps> = ({ musicDetails })
     setRating(currentRating);
   };
 
-  const reset = () => {
-    setRating(0);
-    setComment("");
-  };
   return (
     <div>
       <div>{musicDetails.id}</div>
@@ -98,9 +94,9 @@ export const ReviewPage: React.FC<ReviewProps | MusicProps> = ({ musicDetails })
           };
           const reviewComment = target.comment.value; // typechecks!
           setComment(reviewComment);
-          submitReview();
+          submitReview(reviewComment);
           target.comment.value = "";
-          reset();
+          setRating(0);
         }}
       >
         <div>
