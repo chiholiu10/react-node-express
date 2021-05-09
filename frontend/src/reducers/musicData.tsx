@@ -10,7 +10,8 @@ export const musicData = (state = initialState, action: { type: any; music: obje
         case types.GET_DATA: {
             return {
                 ...state,
-                allMusic: action.music
+                allMusic: action.music,
+                musicDetail: []
             };
         }
 

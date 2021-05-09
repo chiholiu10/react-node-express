@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
-import { connect, ConnectedProps, useDispatch } from "react-redux";
-import { getData, getId } from '../../actions';
+import { useDispatch } from "react-redux";
+import { getId } from '../../actions';
 import axios from 'axios';
 
 interface MusicList {
@@ -17,10 +17,9 @@ interface MusicProps {
   musicListing?: MusicList[];
 }
 
-export const HomePage: React.FC<HomePageProps | MusicProps> = ({ musicListing }) => {
-  // const [inputValue, setInputValue] = useState("");
+export const HomePage: React.FC<MusicProps> = () => {
+  const [musicData, setMusicData] = useState([]);
   const dispatch = useDispatch();
-
   useEffect(() => {
     const config = {
       headers: { "accepts": "application/json" }
@@ -28,8 +27,8 @@ export const HomePage: React.FC<HomePageProps | MusicProps> = ({ musicListing })
 
     try {
       const fetchData = async () => {
-        const result = await axios.get('http://localhost:5000/data', config);
-        dispatch(getData(result.data.videos));
+        const result = await axios.get('http://localhost:5000/', config);
+        setMusicData(result.data);
       };
       fetchData();
     } catch (error) {
@@ -39,7 +38,7 @@ export const HomePage: React.FC<HomePageProps | MusicProps> = ({ musicListing })
 
   return (
     <div>
-      {musicListing.map((music: { id: number; image_url: string; title: string; }, index: number) => {
+      {musicData.map((music: { id: number; image_url: string; title: string; }) => {
         return (
           <Link
             key={music.id}
@@ -56,11 +55,4 @@ export const HomePage: React.FC<HomePageProps | MusicProps> = ({ musicListing })
   );
 };
 
-const mapStateToProps = (state: any) => {
-  return {
-    musicListing: state.musicData.allMusic || []
-  };
-};
-const connector = connect(mapStateToProps);
-type HomePageProps = ConnectedProps<typeof connector>;
-export default connector(HomePage);
+export default HomePage;

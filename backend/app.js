@@ -1,56 +1,67 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
-const fs = require('fs');
 const app = express();
 const port = 5000;
-const path = "./data.json";
-let json;
+const { MongoClient } = require("mongodb");
+const Music = require('./models/Music');
 
-try {
-  if (fs.existsSync(path)) {
-    json = require(path);
+// Replace the uri string with your MongoDB deployment's connection string.
+const uri =
+  "mongodb+srv://chiho:test10.@cluster0.njoye.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  connectTimeoutMS: 30000,
+  keepAlive: 1
+});
+async function run() {
+  try {
+    await client.connect();
+  } finally {
+    // Ensures that the client will close when you finish/error
   }
-} catch (err) {
-  console.error(err);
 }
+
+run().catch(console.dir);
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-app.get("/", (req, res, next) => {
-  res.send('Backend is running');
-});
-
-app.get("/data", async (req, res, next) => {
+app.get("/", async (req, res) => {
   try {
-    const { data } = await axios.get('https://raw.githubusercontent.com/XiteTV/frontend-coding-exercise/main/data/dataset.json');
-    if ((json == undefined || json.length == undefined || json.length < 0)) {
-      fs.writeFile('./data.json', JSON.stringify(data, null, 2), (err) => {
-        if (err) {
-          console.log(err);
-        }
-        console.log("File has been saved");
-      });
-    }
-    res.status(200).json(json);
+    const database = client.db('database').collection('music');
+    const allMusic = await database.find().toArray();
+    res.status(200).json(allMusic);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(404).send('Sorry page is not loading');
   }
 });
 
-app.get("/music/:id", async (req, res, next) => {
-  fs.readFile('./data.json', 'utf8', function (err, data) {
-    const jsonData = JSON.parse(data);
-    const index = jsonData.videos.findIndex((music) => {
-      return music.id == req.params.id;
-    });
-    res.status(200).json(jsonData.videos[index]);
-  });
+app.get("/data", async (req, res, next) => {
+
 });
 
-app.post('/songs', async (req, res) => {
-  console.log(req.body.name);
+app.get("/music/:id", async (req, res) => {
+  let idNumber = parseInt(req.params.id);
+  try {
+    const music = client.db('database').collection('music');
+    let query = { id: idNumber };
+    const musicSong = await music.findOne(query);
+    res.status(200).json(musicSong);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.post('/addReview/:id', async (req, res) => {
+  let idNumber = req.params.id;
+  let reviewObject = req.body;
+  try {
+    const query = { id: idNumber };
+    const musicSong = await music.findOne(query);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.listen(port, () => {
